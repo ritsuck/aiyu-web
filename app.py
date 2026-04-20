@@ -22,9 +22,9 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="原始上傳照片", use_column_width=True)
     
-   if st.button("🚀 開始 AI 辨識"):
+    if st.button("🚀 開始 AI 辨識"):
         with st.spinner('AI 正在努力運算中...'):
-            # 1. 降低信心門檻至 0.25 來測試 (原本是 0.90)
+            # 1. 降低信心門檻至 0.25 來測試
             results = model.predict(source=image, conf=0.25)
             res_plotted = results[0].plot()
             res_rgb = res_plotted[:, :, ::-1]
@@ -32,7 +32,7 @@ if uploaded_file is not None:
             st.success('辨識完成！')
             st.image(res_rgb, caption="AI 辨識結果", use_column_width=True)
             
-            # 2. 讓網站直接用語氣講出判斷結果！
+            # 2. 讓網站直接用語氣講出判斷結果
             boxes = results[0].boxes
             if len(boxes) == 0:
                 st.warning("⚠️ AI 沒有偵測到任何目標。可能是照片特徵不明顯，請換一張試試看！")
