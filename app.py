@@ -20,24 +20,32 @@ def load_model():
 
 model = load_model()
 
+# 💡 新增：成熟度標籤翻譯字典
+# 這裡請把你訓練時設定的標籤名稱 (等號左邊) 對應到想顯示的中文 (等號右邊)
+# 如果你訓練時直接用中文命名，那它就會直接顯示原本的中文。
+label_translator = {
+    "immature": "🟢 未成熟",
+    "mature": "🟡 成熟",
+    "overripe": "🟤 過熟",
+    "peel": "果皮 (未分類成熟度)",
+    # 可以在下面繼續新增你訓練用的標籤...
+}
+
 # 3. 建立檔案上傳區塊
 uploaded_file = st.file_uploader("點擊或拖曳上傳圖片...", type=["jpg", "jpeg", "png"])
 
 # 4. 執行預測
 if uploaded_file is not None:
-    # 強制轉換格式以防手機照片出錯
     image = Image.open(uploaded_file).convert('RGB')
     st.image(image, caption="原始上傳照片", use_container_width=True)
     
     st.markdown("---")
     st.write("🔧 **進階設定**")
-    # 新增一個滑桿，讓你可以自由調整 AI 的敏感度 (預設 0.25，最低 0.01)
     conf_threshold = st.slider("調整 AI 敏感度 (數值越低越容易框出東西，但也容易誤判背景)", min_value=0.01, max_value=0.99, value=0.25, step=0.01)
     
     if st.button("🚀 開始 AI 辨識"):
         with st.spinner('AI 正在努力運算中...'):
             
-            # 執行預測 (使用滑桿調整出來的值)
             results = model.predict(source=image, conf=conf_threshold)
             res_plotted = results[0].plot()
             res_rgb = res_plotted[:, :, ::-1] 
@@ -50,17 +58,21 @@ if uploaded_file is not None:
             # 【智慧判斷 A】：如果是「影像分類」模型
             if results[0].probs is not None:
                 top1_index = results[0].probs.top1
-                class_name = model.names[top1_index]
+                original_class = model.names[top1_index]
+                # 使用翻譯機，如果字典裡沒有，就顯示原本的標籤名
+                display_class = label_translator.get(original_class.lower(), original_class)
                 confidence = float(results[0].probs.top1conf)
-                st.info(f"👉 整張圖片判定為：**{class_name}** (AI 把握度：{confidence:.1%})")
+                st.info(f"👉 系統判定成熟度為：**{display_class}** (AI 把握度：{confidence:.1%})")
                 
             # 【智慧判斷 B】：如果是「物件偵測」模型
             elif results[0].boxes is not None and len(results[0].boxes) > 0:
                 for box in results[0].boxes:
                     class_id = int(box.cls[0])
-                    class_name = model.names[class_id]
+                    original_class = model.names[class_id]
+                    # 使用翻譯機
+                    display_class = label_translator.get(original_class.lower(), original_class)
                     confidence = float(box.conf[0])
-                    st.info(f"👉 偵測到目標：**{class_name}** (AI 把握度：{confidence:.1%})")
+                    st.info(f"👉 偵測到目標：**{display_class}** (AI 把握度：{confidence:.1%})")
                     
             # 【智慧判斷 C】：真的什麼都沒看到
             else:
