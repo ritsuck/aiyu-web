@@ -1,6 +1,8 @@
 import os
-# 🚀 終極殺手：網頁啟動的瞬間，強制把會報錯的套件砍掉！不用再依賴系統檔案！
-os.system("pip uninstall -y opencv-python opencv-contrib-python")
+import sys
+
+# 🚀 終極殺手：加上 sys.executable 確保精準命中雲端環境，強制刪除壞套件！
+os.system(f"{sys.executable} -m pip uninstall -y opencv-python opencv-contrib-python")
 
 import streamlit as st
 from PIL import Image
