@@ -28,7 +28,7 @@ if uploaded_file is not None:
         with st.spinner('AI 正在努力運算中...'):
             
             # 【關鍵修改 2】把門檻 (conf) 降到極低的 0.05，只要有一點點像就框出來
-            results = model.predict(source=image, conf=0.05)
+            results = model.predict(source=image, conf=0.60)
             
             # 處理圖片色彩，讓網頁能正常顯示
             res_plotted = results[0].plot()
