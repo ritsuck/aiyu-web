@@ -20,15 +20,18 @@ def load_model():
 
 model = load_model()
 
-# 💡 新增：成熟度標籤翻譯字典
-# 這裡請把你訓練時設定的標籤名稱 (等號左邊) 對應到想顯示的中文 (等號右邊)
-# 如果你訓練時直接用中文命名，那它就會直接顯示原本的中文。
+# 🔍 抓蟲大師專用：顯示模型真正認識的標籤
+st.sidebar.title("🕵️ 模型大腦解密")
+st.sidebar.info(f"這顆模型內建的標籤字典：\n\n{model.names}")
+st.sidebar.write("👉 檢查這裡！如果只有 peel，代表檔案傳錯了。如果是其他英文/中文，請修改下方的翻譯字典。")
+
+# 💡 成熟度標籤翻譯字典
+# 請根據側邊欄顯示的標籤，修改等號左邊的字 (請注意大小寫要完全一樣)
 label_translator = {
     "immature": "🟢 未成熟",
     "mature": "🟡 成熟",
     "overripe": "🟤 過熟",
     "peel": "果皮 (未分類成熟度)",
-    # 可以在下面繼續新增你訓練用的標籤...
 }
 
 # 3. 建立檔案上傳區塊
@@ -59,7 +62,6 @@ if uploaded_file is not None:
             if results[0].probs is not None:
                 top1_index = results[0].probs.top1
                 original_class = model.names[top1_index]
-                # 使用翻譯機，如果字典裡沒有，就顯示原本的標籤名
                 display_class = label_translator.get(original_class.lower(), original_class)
                 confidence = float(results[0].probs.top1conf)
                 st.info(f"👉 系統判定成熟度為：**{display_class}** (AI 把握度：{confidence:.1%})")
@@ -69,7 +71,6 @@ if uploaded_file is not None:
                 for box in results[0].boxes:
                     class_id = int(box.cls[0])
                     original_class = model.names[class_id]
-                    # 使用翻譯機
                     display_class = label_translator.get(original_class.lower(), original_class)
                     confidence = float(box.conf[0])
                     st.info(f"👉 偵測到目標：**{display_class}** (AI 把握度：{confidence:.1%})")
