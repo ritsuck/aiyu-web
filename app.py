@@ -1,3 +1,9 @@
+import os
+import sys
+
+# 🚀 終極防護：在系統啟動的第一秒，強制把會引起報錯的 OpenCV 殺掉！
+os.system(f"{sys.executable} -m pip uninstall -y opencv-python opencv-contrib-python")
+
 import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
