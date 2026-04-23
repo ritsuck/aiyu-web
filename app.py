@@ -1,3 +1,9 @@
+import os
+import sys
+
+# 🚀 終極防線：在載入任何 AI 模型之前，強制把會導致系統崩潰的標準版 OpenCV 刪除！
+os.system(f"{sys.executable} -m pip uninstall -y opencv-python opencv-contrib-python")
+
 import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
