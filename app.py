@@ -1,3 +1,8 @@
+import os
+# 【終極防護機制】在網頁啟動的瞬間，強制刪除會讓伺服器崩潰的標準版 OpenCV
+os.system("pip uninstall -y opencv-python opencv-python-headless")
+os.system("pip install opencv-python-headless")
+
 import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
