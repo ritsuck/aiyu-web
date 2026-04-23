@@ -1,9 +1,3 @@
-import os
-import sys
-
-# 🚀 終極防線：在載入任何 AI 模型之前，強制把會導致系統崩潰的標準版 OpenCV 刪除！
-os.system(f"{sys.executable} -m pip uninstall -y opencv-python opencv-contrib-python")
-
 import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
@@ -26,7 +20,6 @@ st.sidebar.info(f"這顆模型內建的標籤字典：\n\n{model.names}")
 st.sidebar.write("👉 檢查這裡！如果只有 peel，代表檔案傳錯了。如果是其他英文/中文，請修改下方的翻譯字典。")
 
 # 💡 成熟度標籤翻譯字典
-# 請根據側邊欄顯示的標籤，修改等號左邊的字 (請注意大小寫要完全一樣)
 label_translator = {
     "immature": "🟢 未成熟",
     "mature": "🟡 成熟",
@@ -44,7 +37,7 @@ if uploaded_file is not None:
     
     st.markdown("---")
     st.write("🔧 **進階設定**")
-    conf_threshold = st.slider("調整 AI 敏感度 (數值越低越容易框出東西，但也容易誤判背景)", min_value=0.01, max_value=0.99, value=0.25, step=0.01)
+    conf_threshold = st.slider("調整 AI 敏感度", min_value=0.01, max_value=0.99, value=0.25, step=0.01)
     
     if st.button("🚀 開始 AI 辨識"):
         with st.spinner('AI 正在努力運算中...'):
@@ -58,7 +51,6 @@ if uploaded_file is not None:
             
             st.markdown("### 📊 AI 判定報告：")
             
-            # 【智慧判斷 A】：如果是「影像分類」模型
             if results[0].probs is not None:
                 top1_index = results[0].probs.top1
                 original_class = model.names[top1_index]
@@ -66,7 +58,6 @@ if uploaded_file is not None:
                 confidence = float(results[0].probs.top1conf)
                 st.info(f"👉 系統判定成熟度為：**{display_class}** (AI 把握度：{confidence:.1%})")
                 
-            # 【智慧判斷 B】：如果是「物件偵測」模型
             elif results[0].boxes is not None and len(results[0].boxes) > 0:
                 for box in results[0].boxes:
                     class_id = int(box.cls[0])
@@ -75,6 +66,5 @@ if uploaded_file is not None:
                     confidence = float(box.conf[0])
                     st.info(f"👉 偵測到目標：**{display_class}** (AI 把握度：{confidence:.1%})")
                     
-            # 【智慧判斷 C】：真的什麼都沒看到
             else:
                 st.warning("⚠️ AI 看不到任何目標。試著把上方的「AI 敏感度」拉低一點再試一次看看！")
