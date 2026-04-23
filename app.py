@@ -1,24 +1,6 @@
-import os
-import sys
-import subprocess
-
-# 🚀 終極殺手鐧：在系統啟動前，強制把壞掉的套件殺掉，換成安全的無頭版！
-if not os.path.exists('.env_fixed'):
-    try:
-        # 強制使用當前環境的 pip 解除安裝標準版
-        subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "-y", "opencv-python"])
-        # 強制安裝無頭版 (Headless)
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless==4.8.0.74"])
-        # 建立標記檔案，避免每次按按鈕都重新安裝
-        with open('.env_fixed', 'w') as f:
-            f.write('done')
-    except Exception as e:
-        print("環境修復腳本執行失敗：", e)
-
 import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
-import numpy as np
 
 # 1. 網頁標題與外觀設定
 st.set_page_config(page_title="愛玉檢測系統", layout="centered")
@@ -37,12 +19,14 @@ uploaded_file = st.file_uploader("點擊或拖曳上傳圖片...", type=["jpg", 
 
 # 4. 執行預測
 if uploaded_file is not None:
+    # 強制轉換格式以防手機照片出錯
     image = Image.open(uploaded_file).convert('RGB')
     st.image(image, caption="原始上傳照片", use_container_width=True)
     
     if st.button("🚀 開始 AI 辨識"):
         with st.spinner('AI 正在努力運算中...'):
             
+            # 執行預測
             results = model.predict(source=image, conf=0.25)
             res_plotted = results[0].plot()
             res_rgb = res_plotted[:, :, ::-1] 
