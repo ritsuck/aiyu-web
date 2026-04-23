@@ -1,3 +1,28 @@
+import os
+import sys
+
+# 🚀 終極防線：在載入任何 AI 模型之前，強制把會導致系統崩潰的標準版 OpenCV 刪除！
+os.system(f"{sys.executable} -m pip uninstall -y opencv-python opencv-contrib-python")
+
+import streamlit as st
+from PIL import Image
+from ultralytics import YOLO
+
+# 1. 網頁標題與外觀設定
+st.set_page_config(page_title="愛玉檢測系統", layout="centered")
+st.title("🌱 愛玉品質與成熟度 AI 檢測系統")
+st.write("請上傳愛玉的照片，系統將自動判斷結果。")
+
+# 2. 載入模型
+@st.cache_resource 
+def load_model():
+    return YOLO('best.pt')
+
+model = load_model()
+
+# 3. 建立檔案上傳區塊
+uploaded_file = st.file_uploader("點擊或拖曳上傳圖片...", type=["jpg", "jpeg", "png"])
+
 # 4. 執行預測
 if uploaded_file is not None:
     # 強制轉換格式以防手機照片出錯
@@ -12,7 +37,7 @@ if uploaded_file is not None:
     if st.button("🚀 開始 AI 辨識"):
         with st.spinner('AI 正在努力運算中...'):
             
-            # 這裡的 conf 換成了你滑桿拉到的數值
+            # 執行預測 (使用滑桿調整出來的值)
             results = model.predict(source=image, conf=conf_threshold)
             res_plotted = results[0].plot()
             res_rgb = res_plotted[:, :, ::-1] 
