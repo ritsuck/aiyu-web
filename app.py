@@ -1,12 +1,13 @@
+import streamlit as st
+from PIL import Image
+from ultralytics import YOLO
+
 import os
 import sys
 
 # 🚀 終極防線：強制解決 Streamlit 雲端的 OpenCV 套件衝突
 os.system(f"{sys.executable} -m pip uninstall -y opencv-python opencv-contrib-python")
 
-import streamlit as st
-from PIL import Image
-from ultralytics import YOLO
 
 # 1. 網頁標題與外觀設定
 st.set_page_config(page_title="愛玉成熟度辨識系統", layout="centered")
