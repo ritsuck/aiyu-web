@@ -1,11 +1,31 @@
-import sys
 import os
-os.system(f"{sys.executable} -m pip uninstall -y opencv-python")
+import sys
+import subprocess
+
+# ==========================================
+# 終極防護罩：在任何套件載入前，強制清洗雲端環境
+# ==========================================
+def fix_env():
+    try:
+        # 讓系統用最高權限檢查目前安裝的套件
+        result = subprocess.run([sys.executable, "-m", "pip", "list"], capture_output=True, text=True)
+        # 如果發現了會導致報錯的標準版 opencv-python，就強制砍掉
+        if "opencv-python " in result.stdout:
+            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "opencv-python"], check=True)
+            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "opencv-python-headless"], check=True)
+            subprocess.run([sys.executable, "-m", "pip", "install", "opencv-python-headless"], check=True)
+    except Exception as e:
+        print(f"環境修復攔截失敗: {e}")
+
+# 在執行任何 AI 模型前，先執行清洗
+fix_env()
+# ==========================================
 
 import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
-# ... 下面維持你原本的程式碼 ...
+
+# ... 下面維持你原本的網頁 UI 程式碼 ...
 
 
 # 1. 網頁標題與外觀設定
