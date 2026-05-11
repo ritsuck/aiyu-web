@@ -1,12 +1,11 @@
+import sys
+import os
+os.system(f"{sys.executable} -m pip uninstall -y opencv-python")
+
 import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
-
-import os
-import sys
-
-# 🚀 終極防線：強制解決 Streamlit 雲端的 OpenCV 套件衝突
-os.system(f"{sys.executable} -m pip uninstall -y opencv-python opencv-contrib-python")
+# ... 下面維持你原本的程式碼 ...
 
 
 # 1. 網頁標題與外觀設定
